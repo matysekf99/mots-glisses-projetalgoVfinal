@@ -25,6 +25,10 @@ namespace projetalgo
         }
 
         //méthodes
+
+        /// <summary>
+        /// demarre le minuteur
+        /// </summary>
         public void Demarrer()
         {
             if (!estEnPause)
@@ -39,6 +43,9 @@ namespace projetalgo
             estTermine = false;
         }
 
+        /// <summary>
+        /// met en pause le minuteur
+        /// </summary>
         public void MettreEnPause()
         {
             if (!estTermine && !estEnPause)
@@ -49,6 +56,9 @@ namespace projetalgo
             }
         }
 
+        /// <summary>
+        /// redemarre le minuteur
+        /// </summary>
         public void Reprendre()
         {
             if (estEnPause)
@@ -58,6 +68,9 @@ namespace projetalgo
             }
         }
 
+        /// <summary>
+        /// met à jour le chrono
+        /// </summary>
         public void MettreAJour()
         {
             if (!estTermine && !estEnPause)
@@ -73,6 +86,10 @@ namespace projetalgo
             return estTermine;
         }
 
+        /// <summary>
+        /// retourne le temps qui reste
+        /// </summary>
+        /// <returns></returns>
         public TimeSpan TempsRestant()
         {
             MettreAJour();

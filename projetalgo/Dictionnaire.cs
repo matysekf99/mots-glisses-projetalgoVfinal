@@ -13,31 +13,50 @@ namespace projetalgo
 
 
         //constructeur
-        public Dictionnaire(string filename)
+        public Dictionnaire(string nomfichier)
         {
             dico = new List<string>();
-            ReadFile(filename);
+            ReadFile(nomfichier);
         }
 
         /// <summary>
         /// methode qui convertit le fichier dictionnaire en liste
         /// </summary>
         /// <param name="file"></param>
-        void ReadFile(string file)
+        void ReadFile(string nomFichier)
         {
-            StreamReader sr = new StreamReader(file);
-            string line;
-            while (sr.Peek() >= 0)
+            try
             {
-                line = sr.ReadLine();
-                String[] mots = line.Split(' ');
-                for (int i = 0; i < mots.Length; i++)
+                using (StreamReader sr = new StreamReader(nomFichier))
                 {
-                    dico.Add(mots[i]);
+                    string ligne;
+                    while ((ligne = sr.ReadLine()) != null)
+                    {
+                        string[] mots = ligne.Split(' ');
+                        foreach (string mot in mots)
+                        {
+                            if (!string.IsNullOrWhiteSpace(mot))//vérifie si la chaîne de caractères mot n'est pas nulle, vide ou composée uniquement d'espaces
+                            {
+                                dico.Add(mot);
+                            }
+                        }
+                    }
                 }
             }
-            sr.Close();
+            catch (FileNotFoundException ex)
+            {
+                Console.WriteLine($"Erreur : Fichier non trouvé - {ex.Message}");
+            }
+            catch (IOException ex)
+            {
+                Console.WriteLine($"Erreur d'entrée/sortie - {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Une erreur s'est produite - {ex.Message}");
+            }
         }
+
 
 
         /// <summary>
@@ -46,37 +65,62 @@ namespace projetalgo
         /// <returns></returns>
         public string toString()
         {
-            string retour = "";
-            string[] alphabet = new string[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
-            int j = 0;
-            for (int i = 0; i < alphabet.Length; i++)
+            Dictionary<char, int> compteurLettres = new Dictionary<char, int>();
+            foreach (string mot in dico)
             {
-                int compteur = 0;
-                string lettre = alphabet[i];
-                while (dico[j][0] == Convert.ToChar(lettre) && j < dico.Count - 1)
+                if (mot.Length > 0)
                 {
-                    compteur++;
-                    j++;
+                    char firstLetter = char.ToUpper(mot[0]);
+                    // Vérification si la lettre est déjà présente dans le dictionnaire
+                    if (compteurLettres.ContainsKey(firstLetter))
+                    {
+                        // Si la lettre est présente, on incrémente son compteur
+                        compteurLettres[firstLetter]++;
+                    }
+                    else
+                    {
+                        // Si la lettre n'est pas présente, on l'ajoute au dictionnaire avec un compteur initialisé à 1
+                        compteurLettres[firstLetter] = 1;
+                    }
                 }
-                retour += lettre + " : " + compteur + "\n";
-                compteur = 0;
             }
-            return "C'est un dictionnaire francais. Nombre de mots par lettre : \n" + retour;
+
+            string result = "C'est un dictionnaire français. Nombre de mots par lettre : \n";
+            // Parcours du dictionnaire trié par clé (lettre)
+            foreach (var kvp in compteurLettres.OrderBy(x => x.Key))
+            {
+                // Construction de la partie résultat avec la lettre et son compteur
+                result += kvp.Key +" : "+ kvp.Value+"\n";
+            }
+
+            return result;
         }
 
+
         /// <summary>
-        /// methode qui affiche le dictionnaire
-        /// cette methode sert juste à verfier les autres methode. Elle n'apporte rien au programme
+        /// autre maniere de faire sans dicttionaryy
         /// </summary>
-        /// <param name="liste"></param>
-        public static void AfficherListe(List<string> liste)
-        {
-            Console.WriteLine("Contenu du dictionnaire :");
-            foreach (string element in liste)
-            {
-                Console.WriteLine(element.ToLower());
-            }
-        }
+        /// <returns></returns>
+        //public string toString()
+        //{
+        //    string retour = "";
+        //    string[] alphabet = new string[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
+        //    int j = 0;
+        //    for (int i = 0; i < alphabet.Length; i++)
+        //    {
+        //        int compteur = 0;
+        //        string lettre = alphabet[i];
+        //        while (dico[j][0] == Convert.ToChar(lettre) && j < dico.Count - 1)
+        //        {
+        //            compteur++;
+        //            j++;
+        //        }
+        //        retour += lettre + " : " + compteur + "\n";
+        //        compteur = 0;
+        //    }
+        //    return "C'est un dictionnaire francais. Nombre de mots par lettre : \n" + retour;
+        //}
+
 
         /// <summary>
         /// methode recursive qui recherche un mot avec une approche dichotomique
@@ -90,7 +134,7 @@ namespace projetalgo
         public bool RechDichoRecursif(string mot, int debut, int fin)
         {
             int millieu = (debut + fin) / 2;
-            if (debut > fin || dico == null)
+            if (debut > fin || dico == null|| dico.Count==0)
             {
                 return false;
             }
@@ -128,13 +172,19 @@ namespace projetalgo
         /// <param name="droite"></param>
         public void QuickSort(List<string> liste, int gauche, int droite)
         {
+            // Vérification si la sous-liste a plus d'un élément
             if (gauche < droite)
             {
+                // Sélection du pivot et partitionnement de la liste
                 int pivot = Partition(liste, gauche, droite);
+
+                // Appel récursif pour la partie gauche de la liste
                 if (pivot > gauche)
                 {
                     QuickSort(liste, gauche, pivot - 1);
                 }
+
+                // Appel récursif pour la partie droite de la liste
                 if (pivot < droite)
                 {
                     QuickSort(liste, pivot + 1, droite);
@@ -142,16 +192,19 @@ namespace projetalgo
             }
         }
 
-
         public int Partition(List<string> liste, int gauche, int droite)
         {
+            // Choix du pivot comme élément le plus à droite de la liste
             string pivot = liste[droite];
             int i = gauche - 1;
 
+            // Parcours de la sous-liste de gauche à droite (sauf le pivot)
             for (int j = gauche; j < droite; j++)
             {
+                // Comparaison des éléments avec le pivot
                 if (liste[j].CompareTo(pivot) <= 0)
                 {
+                    // Si l'élément est inférieur ou égal au pivot, on l'échange avec l'élément à la position i+1
                     i++;
                     string temp = liste[i];
                     liste[i] = liste[j];
@@ -159,12 +212,15 @@ namespace projetalgo
                 }
             }
 
+            // Échange du pivot avec l'élément à la position i+1 pour le placer à sa position finale
             string temp1 = liste[i + 1];
             liste[i + 1] = liste[droite];
             liste[droite] = temp1;
 
+            // Retourne la position finale du pivot
             return i + 1;
         }
+
 
         /// <summary>
         /// verifie si la liste est deja triée

@@ -94,7 +94,7 @@ namespace projetalgo
             }
             while (!existe);
 
-            int[,] solution = plateau.SearchWord(mot.ToUpper());
+            int[,] solution = plateau.ChercheMot(mot.ToUpper());
             bool motdanslamtrice = false;
             for (int i = 0; i < solution.GetLength(0); i++)
             {

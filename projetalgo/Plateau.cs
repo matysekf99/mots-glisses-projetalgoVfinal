@@ -18,15 +18,15 @@ namespace projetalgo
         char[,] plateaumat;
 
         //constructeur
-        public Plateau(string filename, int lignes, int colonnes)
+        public Plateau(string nomfichier, int lignes, int colonnes)
         {
             this.plateaumat = new char[lignes, colonnes];
-            ReadFile(filename);
+            ReadFile(nomfichier);
         }
 
-        public Plateau(string filename)
+        public Plateau(string nomfichier)
         {
-            ReadFile(filename);
+            ReadFile(nomfichier);
         }
 
         //méthodes
@@ -34,20 +34,20 @@ namespace projetalgo
         /// lire le fichier et le convertir en matrice de characteres
         /// ou creer une matrice aleatoire
         /// </summary>
-        /// <param name="filename"></param>
-        void ReadFile(string filename)
+        /// <param name="nomfichier"></param>
+        void ReadFile(string nomfichier)
         {
-            if (filename != "Lettre.txt")
+            if (nomfichier != "Lettre.txt")
             {
                 // Détermine les dimensions de la matrice
-                if (!File.Exists(filename))
+                if (!File.Exists(nomfichier))
                 {
-                    Console.WriteLine("Erreur: LE fichier '" + filename + "' n'existe pas.");
+                    Console.WriteLine("Erreur: Le fichier '" + nomfichier + "' n'existe pas.");
                     return;
                 }
-                int rows = 0;
-                int columns = 0;
-                using (StreamReader sr1 = new StreamReader(filename))
+                int lignes = 0;
+                int colonnes = 0;
+                using (StreamReader sr1 = new StreamReader(nomfichier))
                 {
                     while (sr1.Peek() >= 0)
                     {
@@ -56,28 +56,25 @@ namespace projetalgo
 
                         if (values != null && values.Length > 0)
                         {
-                            rows++;
-                            if (columns == 0)
-                                columns = values.Length;
-                            if (values.Length != columns)
+                            lignes++;
+                            if (colonnes == 0)
                             {
-                                Console.WriteLine("Error: Inconsistent number of columns in the file.");
-                                return;
+                                colonnes = values.Length;
                             }
                         }
                     }
                 }
-                this.plateaumat = new char[rows, columns];
-                using (StreamReader sr = new StreamReader(filename))
+                this.plateaumat = new char[lignes, colonnes];
+                using (StreamReader sr = new StreamReader(nomfichier))
                 {
                     int i = 0;
                     while (sr.Peek() >= 0)
                     {
                         string line = sr.ReadLine();
                         string[] values = line.Split(';');
-                        if (values != null && values.Length == columns)
+                        if (values != null && values.Length == colonnes)
                         {
-                            for (int j = 0; j < columns; j++)
+                            for (int j = 0; j < colonnes; j++)
                             {
                                 this.plateaumat[i, j] = char.ToUpper(char.Parse(values[j]));
                             }
@@ -86,13 +83,13 @@ namespace projetalgo
                     }
                 }
             }
-            else if (filename == "Lettre.txt")
+            else if (nomfichier == "Lettre.txt")
             {
                 int n = 0;
-                string[] lines = File.ReadAllLines(filename);
+                string[] lignesfichier = File.ReadAllLines(nomfichier);
                 List<char> ListeLettres = new List<char>();
 
-                foreach (string line in lines)
+                foreach (string line in lignesfichier)
                 {
                     string[] values = line.Split(',');
                     if (values != null && values.Length == 3 && values[1] != null)
@@ -240,112 +237,148 @@ namespace projetalgo
             }
         }
 
-        public int[,] SearchWord(string word)
+        /// <summary>
+        /// parcourt la base de la matrice pour chercher le mot
+        /// Renvoie une matrice d'entier avec le chemin de mot
+        /// </summary>
+        /// <param name="word"></param>
+        /// <returns></returns>
+        public int[,] ChercheMot(string word)
         {
             int[,] solution = new int[plateaumat.GetLength(0), plateaumat.GetLength(1)];
             for (int j = 0; j < plateaumat.GetLength(1); j++)
             {
-                bool isFound = Search(solution, word, plateaumat.GetLength(0) - 1, j, 0);
+                bool isFound = Cherche(solution, word, plateaumat.GetLength(0) - 1, j, 0);
                 if (isFound)
                     return solution;
             }
 
             return solution;
         }
-        public List<Coordonees> GetValidMoves(int m, int n, int row, int column)
+
+        /// <summary>
+        /// retourne une liste de tous les mouvement possibles autour d'une case
+        /// </summary>
+        /// <param name="m">dimension verticale de la matrice</param>
+        /// <param name="n">dimension horizontale de la matrice</param>
+        /// <param name="ligne">coordonnée verticale de la matrice</param>
+        /// <param name="colonne">coordonnée horizontale de la matrice</param>
+        /// <returns></returns>
+        public List<Coordonees> Mouvementspossibles(int m, int n, int ligne, int colonne)
         {
-            List<Coordonees> possibleMoves = new List<Coordonees>();
+            List<Coordonees> listeMouvements = new List<Coordonees>();
             Coordonees point = new Coordonees();
             // peut aller en haut
-            if (row - 1 >= 0)
+            if (ligne - 1 >= 0)
             {
-                point.X = row - 1;
-                point.Y = column;
-                possibleMoves.Add(point);
+                point.X = ligne - 1;
+                point.Y = colonne;
+                listeMouvements.Add(point);
             }
             // peut aller en bas
-            if (row + 1 < m)
+            if (ligne + 1 < m)
             {
-                point.X = row + 1;
-                point.Y = column;
-                possibleMoves.Add(point);
+                point.X = ligne + 1;
+                point.Y = colonne;
+                listeMouvements.Add(point);
             }
             //peut aller a gauche
-            if (column - 1 >= 0)
+            if (colonne - 1 >= 0)
             {
-                point.X = row;
-                point.Y = column - 1;
-                possibleMoves.Add(point);
+                point.X = ligne;
+                point.Y = colonne - 1;
+                listeMouvements.Add(point);
             }
             // peut aller a droite
-            if (column + 1 < n)
+            if (colonne + 1 < n)
             {
-                point.X = row;
-                point.Y = column + 1;
-                possibleMoves.Add(point);
+                point.X = ligne;
+                point.Y = colonne + 1;
+                listeMouvements.Add(point);
             }
 
-            //ajout des diagonales
+            //diagonales
 
             //en haut à droite
-            if (column + 1 < n && row - 1 >= 0)
+            if (colonne + 1 < n && ligne - 1 >= 0)
             {
-                point.X = row - 1;
-                point.Y = column + 1;
-                possibleMoves.Add(point);
+                point.X = ligne - 1;
+                point.Y = colonne + 1;
+                listeMouvements.Add(point);
             }
             //en bas à droite
-            if (column + 1 < n && row + 1 < m)
+            if (colonne + 1 < n && ligne + 1 < m)
             {
-                point.X = row + 1;
-                point.Y = column + 1;
-                possibleMoves.Add(point);
+                point.X = ligne + 1;
+                point.Y = colonne + 1;
+                listeMouvements.Add(point);
             }
             //en bas à gauche
-            if (column - 1 >= 0 && row + 1 < m)
+            if (colonne - 1 >= 0 && ligne + 1 < m)
             {
-                point.X = row + 1;
-                point.Y = column - 1;
-                possibleMoves.Add(point);
+                point.X = ligne + 1;
+                point.Y = colonne - 1;
+                listeMouvements.Add(point);
             }
 
             //en haut à gauche
-            if (column - 1 >= 0 && row - 1 >= 0)
+            if (colonne - 1 >= 0 && ligne - 1 >= 0)
             {
-                point.X = row - 1;
-                point.Y = column - 1;
-                possibleMoves.Add(point);
+                point.X = ligne - 1;
+                point.Y = colonne - 1;
+                listeMouvements.Add(point);
             }
 
-            return possibleMoves;
+            return listeMouvements;
         }
 
-        public bool Search(int[,] solution, string word, int row, int column, int pathLength)
+        /// <summary>
+        /// methode recursive qui retourne un booleen;
+        /// </summary>
+        /// <param name="solution"></param>
+        /// <param name="mot"></param>
+        /// <param name="ligne"></param>
+        /// <param name="colonne"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public bool Cherche(int[,] solution, string mot, int ligne, int colonne, int index)
         {
-            if (word.Length == pathLength)
+            //condition de sortie si le mot est dans la matrice
+            if (mot.Length == index)
             {
                 return true;
             }
-
-            if (solution[row, column] != 0 || plateaumat[row, column] != word[pathLength])
+            //condition 2 de sortie si le mot n'est pas dans la matrice
+            // solution[ligne, colonne] != 0 --> sert à ne pas retourner sur une case deja utilisé pour completer le mot
+            if (solution[ligne, colonne] != 0 || plateaumat[ligne, colonne] != mot[index])
             {
                 return false;
             }
+            //si on est arrivé ici, la lettre dans case actuelle = mot[index]
+            //commence le chemin dans la matrice solution
+            index++;
+            solution[ligne, colonne] = index;
 
-            pathLength++;
-            solution[row, column] = pathLength;
-
-            List<Coordonees> validMoves = GetValidMoves(plateaumat.GetLength(0), plateaumat.GetLength(1), row, column);
-            foreach (Coordonees point in validMoves)
+            //recupere une liste de tous les mouvements possible
+            List<Coordonees> listePointsPossible = Mouvementspossibles(plateaumat.GetLength(0), plateaumat.GetLength(1), ligne, colonne);
+            foreach (Coordonees point in listePointsPossible)
             {
-                if (Search(solution, word, point.X, point.Y, pathLength))
+                //appel de la fonction pour tester chaque case autour
+                if (Cherche(solution, mot, point.X, point.Y, index))
                     return true;
             }
-
-            solution[row, column] = 0;
+            //si la lettre autour ne correspond pas a celle du mot alors remettre la case à 0.
+            solution[ligne, colonne] = 0;
             return false;
         }
 
+
+        /// <summary>
+        /// convertit la matricce solution en liste de coordonnées
+        /// methode utilisée dans jeu pour creer la liste passée en parametre de la methode maj_plateau
+        /// </summary>
+        /// <param name="solution"></param>
+        /// <returns></returns>
         public static List<Coordonees> ConvertirSolutionenListe(int[,] solution)
         {
             List<Coordonees> retour = new List<Coordonees>();
@@ -365,8 +398,13 @@ namespace projetalgo
             return retour;
         }
 
+        /// <summary>
+        /// actualise le plateau en fonction du mot trouvé
+        /// </summary>
+        /// <param name="coordmot"></param>
         public void Maj_Plateau(List<Coordonees> coordmot)
         {
+            //1ere partie : remplace les cases du mot trouvé par des espaces
             int index = 0;
             for (int i = 0; i < plateaumat.GetLength(0); i++)
             {
@@ -387,19 +425,19 @@ namespace projetalgo
                     break;
                 }
             }
-            bool deplace = false;
             //se deplace comme dans un repere en maths donc origine en bas a gauche avec x=i et y=j. Pour chaque
             // colonne remonte la ligne et actualise les espaces vides avec la valeur non vide au dessus.
-            for (int i = 0; i < plateaumat.GetLength(1); i++)
+            bool deplace = false;
+            for (int i = 0; i < plateaumat.GetLength(1); i++)//de gauche à droite
             {
-                for (int j = plateaumat.GetLength(0) - 1; j > 0; j--)
+                for (int j = plateaumat.GetLength(0) - 1; j > 0; j--)//de bas en haut
                 {
                     if (plateaumat[j, i] == ' ')
                     {
-                        int t = j - 1;
-                        while (!deplace && t >= 0)
+                        int t = j - 1;//commence une case au dessus d'ou le j-1. Ex: si la case vide est 7;1, alors on s'interesse à 6;1 puis 5;1 ,...
+                        while (!deplace && t >= 0)//echange la case vide avec la case non vide en hauteur la plus proche
                         {
-                            if (plateaumat[t, i] != ' ')
+                            if (plateaumat[t, i] != ' ')//detecte la case vide en hauteur la plus proche
                             {
                                 plateaumat[j, i] = plateaumat[t, i];
                                 plateaumat[t, i] = ' ';
@@ -414,44 +452,6 @@ namespace projetalgo
             }
         }
 
-        /// <summary>
-        /// utile que pour les tests mais ne sert a rien dans le programme principal
-        /// </summary>
-        /// <param name="matrice"></param>
-        public static void AfficherMatrice(char[,] matrice)
-        {
-            int lignes = matrice.GetLength(0);
-            int colonnes = matrice.GetLength(1);
-
-            for (int i = 0; i < lignes; i++)
-            {
-                for (int j = 0; j < colonnes; j++)
-                {
-                    Console.Write(matrice[i, j] + " ");
-                }
-                Console.WriteLine(); // Passer à la ligne après chaque ligne de la matrice
-            }
-        }
-
-
-        /// <summary>
-        /// affiche une liste de coordonnées
-        /// </summary>
-        /// <param name="l"></param>
-        public static void afficheListecoordonne(List<Coordonees> l)
-        {
-            if (l == null || l.Count == 0)
-            {
-                Console.WriteLine("null");
-            }
-            else
-            {
-                foreach (Coordonees item in l)
-                {
-                    Console.WriteLine("X : " + item.X + " Y : " + item.Y);
-                }
-            }
-        }
 
         //proprites
         public char[,] Plateaumat
