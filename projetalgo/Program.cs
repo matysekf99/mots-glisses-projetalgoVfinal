@@ -5,7 +5,7 @@ using System.Security.Cryptography.X509Certificates;
 using static projetalgo.Plateau;
 static void main()
 {
-    string nomfichier;
+    string nomfichier; 
     do
     {
         Console.WriteLine("Saisir 'sortir'  pour sortir ou 'aleatoire' pour joueur avec une matrice aleatoire ou taper le nom du fichier avec lequel vous voulez jouer");
