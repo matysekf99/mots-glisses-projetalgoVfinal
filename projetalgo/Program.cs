@@ -5,7 +5,9 @@ using System.Security.Cryptography.X509Certificates;
 using static projetalgo.Plateau;
 static void main()
 {
-    string nomfichier; 
+    
+    string nomfichier;
+    // Permet à l'utilisateur de choisir la matrice ou de sortir du jeu
     do
     {
         Console.WriteLine("Saisir 'sortir'  pour sortir ou 'aleatoire' pour joueur avec une matrice aleatoire ou taper le nom du fichier avec lequel vous voulez jouer");
@@ -92,6 +94,8 @@ static void main()
         }
     } while (nomfichier != "sortir");
 
+
+    // Affiche le titre et les joueurs entrent leur nom
     string Début(int n)
     {
         Console.OutputEncoding = System.Text.Encoding.UTF8; // Permet l'affichage de certains caractères spéciaux
@@ -108,6 +112,7 @@ static void main()
     }
 
 
+    // Vérifie que le fichier à le bon nombre de colonne sur chaque ligne
     bool MemeNbColonne(string nom_fichier)
     {
         int lignes = 0;

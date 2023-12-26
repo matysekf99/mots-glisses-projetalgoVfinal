@@ -22,7 +22,7 @@ namespace projetalgo
         }
 
         /// <summary>
-        /// Ajoute un mot trouvé par la joueur a la lsite des mots trouvés
+        /// Ajoute un mot trouvé par la joueur a la liste des mots trouvés
         /// </summary>
         /// <param name="mot"></param>
         public void Add_Mot(string mot)
@@ -68,7 +68,7 @@ namespace projetalgo
         }
 
         /// <summary>
-        /// test si "mot" est present dans la liste de mots
+        /// test si "mot" est présent dans la liste de mots
         /// </summary>
         /// <param name="mot"></param>
         /// <returns>bool</returns>

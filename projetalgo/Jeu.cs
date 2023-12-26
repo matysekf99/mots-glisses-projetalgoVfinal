@@ -9,6 +9,7 @@ namespace projetalgo
 {
     public class Jeu
     {
+        // attributs
         Dictionnaire dictionnaire;
         Plateau plateau;
         Joueur joueur1;
@@ -16,6 +17,7 @@ namespace projetalgo
         Minuteur minuteurJoueur1;
         Minuteur minuteurJoueur2;
 
+        // constructeur
         public Jeu(Dictionnaire dictionnaire, Plateau plateau, Joueur joueur1, Joueur joueur2, int TempsMinutes)
         {
             this.dictionnaire = dictionnaire;
@@ -25,6 +27,10 @@ namespace projetalgo
             this.minuteurJoueur1 = new Minuteur(TimeSpan.FromMinutes(TempsMinutes));
             this.minuteurJoueur2 = new Minuteur(TimeSpan.FromMinutes(TempsMinutes));
         }
+
+        /// <summary>
+        /// fonction qui permet de faire une partie de mots glissés
+        /// </summary>
 
         public void play()
         {
@@ -62,6 +68,12 @@ namespace projetalgo
             }
         }
 
+        /// <summary>
+        /// Fonction qui permet de faire un tour de jeu
+        /// </summary>
+        /// <param name="joueur"></param>
+        /// <param name="minuteur"></param>
+
         public void TourDeJeu(Joueur joueur, Minuteur minuteur)
         {
             Console.WriteLine(joueur1.toString());
@@ -70,14 +82,14 @@ namespace projetalgo
             Console.WriteLine($"Temps restant : {minuteurJoueur2.TempsRestant().ToString(@"mm\:ss")}");
             if (joueur.Nom == joueur1.Nom)
             {
-                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.ForegroundColor = ConsoleColor.Blue;  // affiche les prochains textes en bleu
             }
             else if (joueur.Nom == joueur2.Nom)
             {
-                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.ForegroundColor = ConsoleColor.Yellow; // affiche les prochains textes en jaune
             }
             Console.WriteLine("Tour de " + joueur.Nom);
-            Console.ResetColor();
+            Console.ResetColor(); // Met les prochains textes en couleur d'origine
             Console.WriteLine(plateau.toString());
             bool existe = false;
             string mot = null;
@@ -87,7 +99,7 @@ namespace projetalgo
                 existe = dictionnaire.RechDichoRecursif(mot, 0, dictionnaire.Dico.Count);
                 if (!existe)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.ForegroundColor = ConsoleColor.Red; 
                     Console.WriteLine("Le mot n'est pas dans le dictionnaire");
                     Console.ResetColor();
                 }
@@ -140,6 +152,11 @@ namespace projetalgo
             }
         }
 
+        /// <summary>
+        /// Calcul les points du mot entré
+        /// </summary>
+        /// <param name="mot"></param>
+        /// <returns></returns>
 
         public int pointMot(string mot)
         {
@@ -169,6 +186,12 @@ namespace projetalgo
 
             return scoreTotal + mot.Length;
         }
+
+        /// <summary>
+        /// Affiche le mot entré en vert dans la matrice
+        /// </summary>
+        /// <param name="joueur"></param>
+        /// <param name="solution"></param>
 
         public void AppliquerCouleur(Joueur joueur, int[,] solution)
         {
