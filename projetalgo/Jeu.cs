@@ -15,7 +15,7 @@ namespace projetalgo
         Joueur joueur1;
         Joueur joueur2;
         Minuteur minuteurJoueur1;
-        Minuteur minuteurJoueur2;
+        Minuteur minuteurJoueur2; 
 
         // constructeur
         public Jeu(Dictionnaire dictionnaire, Plateau plateau, Joueur joueur1, Joueur joueur2, int TempsMinutes)
